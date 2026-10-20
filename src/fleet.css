@@ -124,3 +124,7 @@
 .fl-state.has-base { fill: #dfe9e2; }
 .fl-credit { margin: 0 14px 12px; color: #8a948e; font-size: 10px; }
 .fl-credit a { color: #4d7b68; }
+.fl-state.st-green { fill: #b9e3c6; } .fl-state.st-amber { fill: #fdd57e; } .fl-state.st-red { fill: #f3958c; }
+.fl-state { cursor: default; } .fl-state[class*="st-"] { cursor: pointer; }
+.fl-state.sel { stroke: #1f2f28; stroke-width: 1.6; }
+.fl-slabel { fill: #6b7a72; font-size: 9px; text-anchor: middle; pointer-events: none; }

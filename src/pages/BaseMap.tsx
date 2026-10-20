@@ -18,6 +18,14 @@ function ringsOf(g: { type: string; coordinates: unknown }): number[][][] {
   return []
 }
 const norm = (x: string) => x.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim()
+function anchor(rings: number[][][]) {
+  let best = rings[0] ?? [], area = 0
+  for (const r of rings) { let a = 0; for (let i = 0; i < r.length - 1; i++) a += r[i][0] * r[i + 1][1] - r[i + 1][0] * r[i][1]; a = Math.abs(a / 2); if (a > area) { area = a; best = r } }
+  const n = Math.max(1, best.length); const lon = best.reduce((s, p) => s + p[0], 0) / n, lat = best.reduce((s, p) => s + p[1], 0) / n
+  const [lx, ly] = px(lon, lat)
+  return { lx, ly, area }
+}
+const SHORT: Record<string, string> = { 'jammu and kashmir': 'J&K', 'andaman and nicobar': 'A&N', 'dadra and nagar haveli and daman and diu': 'DNHDD', 'arunachal pradesh': 'AR', 'himachal pradesh': 'HP', 'andhra pradesh': 'Andhra Pradesh' }
 const stateName = (p?: Record<string, unknown>) => String(p?.st_nm ?? p?.ST_NM ?? p?.NAME_1 ?? p?.name ?? p?.state ?? p?.State ?? '')
 
 function useIndiaGeo() {
@@ -43,7 +51,7 @@ export default function BaseMap({ engines, openEngine }: { engines: Engine[]; op
   const ranked = [...bases].sort((a, b) => pct(a) - pct(b))
   const total = fleet.length
   const fleetReady = bases.reduce((s, b) => s + ready(b), 0)
-  const paths = useMemo(() => (geo?.features ?? []).flatMap((f, i) => f.geometry ? [{ key: i, name: stateName(f.properties), d: ringsOf(f.geometry).map((ring) => ring.map(([lon, lat], j) => `${j ? 'L' : 'M'}${px(lon, lat).map((v) => v.toFixed(1)).join(' ')}`).join(' ') + 'Z').join(' ') }] : []), [geo])
+  const paths = useMemo(() => (geo?.features ?? []).flatMap((f, i) => f.geometry ? [{ key: i, name: stateName(f.properties), ...anchor(ringsOf(f.geometry)), d: ringsOf(f.geometry).map((ring) => ring.map(([lon, lat], j) => `${j ? 'L' : 'M'}${px(lon, lat).map((v) => v.toFixed(1)).join(' ')}`).join(' ') + 'Z').join(' ') }] : []), [geo])
 
   return <div className="fl">
     <div className="demo-strip"><Info size={15} /><span><b>Demo fleet layer.</b> Air bases, aircraft, tail numbers and sortie rates are fictional and hard-coded; each aircraft carries real model-scored NASA C-MAPSS engines.</span></div>
@@ -59,7 +67,9 @@ export default function BaseMap({ engines, openEngine }: { engines: Engine[]; op
         <div className="panel-title"><div><h2>India air base map</h2><p>Bases coloured by share of aircraft ready · select a base</p></div>
           <div className="fl-seg" role="tablist">{HORIZONS.map((o) => <button key={o.h} className={h === o.h ? 'active' : ''} onClick={() => setH(o.h)}>{o.label}</button>)}</div></div>
         <svg viewBox={`-10 -10 ${W + 20} ${H + 20}`} className="fl-svg" role="img" aria-label="Map of India with air bases">
-          {paths.length ? paths.map((p) => <path key={p.key} d={p.d} className={`fl-state ${base && norm(p.name) === norm(base.state) ? 'sel' : baseStates.has(norm(p.name)) ? 'has-base' : ''}`}><title>{p.name}</title></path>) : <>
+          {paths.length ? <>{paths.map((p) => { const sb = bases.filter((b) => norm(b.state) === norm(p.name)); const band = sb.length ? readinessBand(Math.min(...sb.map(pct))) : null
+            return <path key={p.key} d={p.d} className={`fl-state ${band ? 'st-' + band.toLowerCase() : ''} ${base && norm(p.name) === norm(base.state) ? 'sel' : ''}`} onClick={() => sb[0] && setSelected(sb[0].id)}><title>{p.name}{sb.length ? ` – ${sb.map((b) => b.name.replace('Vayu Base ', '') + ' ' + Math.round(pct(b)) + '% ready').join(', ')}` : ' – no demo base'}</title></path> })}
+            {paths.filter((p) => p.area > 2.2 && !baseStates.has(norm(p.name))).map((p) => <text key={'l' + p.key} x={p.lx} y={p.ly} className="fl-slabel">{SHORT[norm(p.name)] ?? p.name}</text>)}</> : <>
             {[10, 15, 20, 25, 30, 35].map((lat) => <line key={`a${lat}`} x1={0} x2={W} y1={px(70, lat)[1]} y2={px(70, lat)[1]} className="fl-grid" />)}
             {[70, 75, 80, 85, 90, 95].map((lon) => <line key={`o${lon}`} y1={0} y2={H} x1={px(lon, 20)[0]} x2={px(lon, 20)[0]} className="fl-grid" />)}
           </>}

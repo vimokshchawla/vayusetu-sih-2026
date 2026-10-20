@@ -129,3 +129,5 @@
 @media print { .sim-builder, .sim-picker { display: none; } .sim-grid { grid-template-columns: 1fr; } }
 .sim-hint { max-width: 380px; margin: 4px 0 0; padding: 8px 10px; color: #6b4a0c; background: #fbf0dc; border-radius: 4px; font-size: 11px; line-height: 1.5; text-align: left; }
 .sim-hint .link-button { font-size: 11px; }
+.sim-verdict { margin-top: 6px; font-size: 15px; } .sim-verdict.stable { color: #1d6b42; } .sim-verdict.elevated { color: #b65d08; } .sim-verdict.severe { color: #b4231b; }
+.sim-verdict-text { max-width: 360px; color: #5b6862; font-size: 12px; }
