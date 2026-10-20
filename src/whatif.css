@@ -1,0 +1,129 @@
+/* What-if simulator (NIRMAN-style scenario builder) */
+.sim { display: grid; gap: 12px; }
+.sim-kicker { display: block; color: #2d5b4d; font-size: 9px; font-weight: 700; letter-spacing: 1.1px; }
+.sim h2 { margin: 3px 0 2px; color: #1f2f28; font-size: 16px; font-weight: 700; }
+.sim-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sim-head p { margin: 0; color: #6d7a72; font-size: 11px; }
+.sim .link-button { display: inline-flex; align-items: center; gap: 5px; padding: 0; background: transparent; border: 0; color: #245644; font-size: 11px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; white-space: nowrap; }
+
+.sim-picker { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 14px 16px; }
+.sim-picker label { flex: 0 1 620px; display: grid; gap: 6px; color: #33443b; font-size: 11px; font-weight: 600; }
+.sim select { height: 38px; padding: 0 10px; color: #26352d; background: #fff; border: 1px solid #d5ddd7; border-radius: 3px; font: inherit; font-size: 12px; font-weight: 500; }
+
+.sim-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.sim-builder { display: grid; gap: 14px; padding: 18px; }
+.sim-quick { padding: 12px; background: #f4f6f4; border: 1px solid #e6ebe7; border-radius: 4px; }
+.sim-quick > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.sim-chip { min-height: 34px; padding: 0 13px; color: #1f3a30; background: #fff; border: 1px solid #d3ddd6; border-radius: 4px; font: inherit; font-size: 11px; font-weight: 650; cursor: pointer; }
+.sim-chip:hover { border-color: #8fb3a3; }
+.sim-chip.active { color: #fff; background: #2d5b4d; border-color: #2d5b4d; }
+
+.sim-groups { border: 1px solid #e3e8e4; border-radius: 4px; }
+.sim-group + .sim-group { border-top: 1px solid #e8ece9; }
+.sim-group-head { width: 100%; min-height: 46px; display: flex; align-items: center; gap: 10px; padding: 0 14px; background: transparent; border: 0; font: inherit; cursor: pointer; text-align: left; }
+.sim-group-head b { flex: 1; color: #1f2f28; font-size: 12px; }
+.sim-group-head span { color: #87918b; font-size: 10px; }
+.sim-group-head span.changed { color: #8a5a12; font-weight: 650; }
+.sim-group-head svg { color: #7c8a82; transition: transform .15s; }
+.sim-group.open .sim-group-head svg { transform: rotate(180deg); }
+.sim-field { padding: 4px 14px 14px; }
+.sim-field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.sim-field-top label { color: #2e3c34; font-size: 11px; }
+.sim-field-top b { padding: 3px 7px; color: #2b3a32; background: #f2f4f2; border-radius: 3px; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sim-field-top b.changed { color: #7a4e0d; background: #fbf0dc; }
+.sim-field input[type=range] { width: 100%; height: 6px; margin: 0; appearance: none; -webkit-appearance: none; background: linear-gradient(90deg, #1f5446 var(--fill, 0%), #e3e7e4 var(--fill, 0%)); border-radius: 4px; cursor: pointer; }
+.sim-field input[type=range]::-webkit-slider-thumb { width: 18px; height: 18px; -webkit-appearance: none; background: #1f5446; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #1f5446; }
+.sim-field input[type=range]::-moz-range-thumb { width: 14px; height: 14px; background: #1f5446; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #1f5446; }
+.sim-field-scale { display: flex; justify-content: space-between; gap: 10px; margin-top: 7px; color: #6f7a74; font-size: 9px; }
+.sim-field-scale small { flex: 1; color: #8a948e; font-size: 9px; text-align: center; line-height: 1.4; }
+.sim-field-scale span { white-space: nowrap; }
+.sim-submit { width: 100%; min-height: 44px; justify-content: center; font-size: 12px; }
+.sim-note { display: flex; gap: 7px; margin: -4px 0 0; color: #77837b; font-size: 9px; line-height: 1.5; }
+.sim-note svg { flex: 0 0 auto; margin-top: 1px; }
+
+.sim-side { display: grid; gap: 12px; }
+.sim-baseline { padding: 16px; }
+.sim-date { color: #6e7a73; font-size: 10px; }
+.sim-selects { display: flex; gap: 12px; margin: 10px 0 12px; }
+.sim-selects label { display: grid; gap: 5px; color: #33443b; font-size: 11px; font-weight: 600; }
+.sim-selects select:disabled { color: #33443b; background: #f6f7f6; }
+.sim-gauge-card { display: grid; justify-items: center; gap: 4px; max-width: 420px; margin: 0 auto; padding: 16px; border: 1px solid #e3e7e4; border-radius: 6px; box-shadow: 0 4px 16px #1e322a12; text-align: center; }
+.sim-gauge-card > span { color: #3b4a42; font-size: 12px; }
+.sim-gauge-card > strong { color: #121b16; font-size: 40px; font-weight: 800; line-height: 1.05; }
+.sim-gauge-card > strong i { margin-left: 2px; color: #4a5a52; font-size: 18px; font-style: normal; }
+.sim-outlook { padding: 3px 10px; border-radius: 10px; font-size: 10px; font-style: normal; font-weight: 750; letter-spacing: 1px; }
+.sim-outlook.stable { color: #1d6b42; background: #e5f4ea; }
+.sim-outlook.elevated { color: #9a5b06; background: #fdf1dc; }
+.sim-outlook.severe { color: #a3221a; background: #fde8e6; }
+.sim-legend { margin: 0; padding-bottom: 8px; color: #49564f; font-size: 10px; border-bottom: 1px solid #edf0ee; }
+.sim-base-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 4px 0 0; color: #6f7b74; font-size: 10px; }
+
+.sim-gauge { width: 100%; max-width: 300px; overflow: visible; }
+.sim-gauge.small { max-width: 210px; }
+.sim-gauge path { fill: none; stroke-width: 16; stroke-linecap: round; }
+.sim-gauge .g-green { stroke: #3cbf6b; } .sim-gauge .g-amber { stroke: #f2a93b; } .sim-gauge .g-red { stroke: #ec5353; }
+.sim-gauge .g-needle { stroke-width: 4; stroke-linecap: round; }
+.sim-gauge .stable { stroke: #1d6b42; fill: #1d6b42; } .sim-gauge .elevated { stroke: #b65d08; fill: #b65d08; } .sim-gauge .severe { stroke: #b4231b; fill: #b4231b; }
+.sim-gauge text { fill: #59665f; font-size: 10px; }
+
+.sim-empty { min-height: 190px; display: grid; place-content: center; justify-items: center; gap: 6px; padding: 20px; color: #6e7b74; text-align: center; border-style: dashed; }
+.sim-empty p { margin: 0; font-size: 11px; }
+
+.sim-report { display: grid; gap: 10px; padding: 16px; }
+.sim-report h2 { margin: 0; }
+.sim-sub { margin: -6px 0 2px; color: #5f6d66; font-size: 11px; }
+.sim-dirty { padding: 8px 10px; color: #7a4e0d; background: #fbf0dc; border-radius: 4px; font-size: 10px; }
+.sim-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sim-mini { display: grid; justify-items: center; gap: 2px; padding: 12px; border: 1px solid #e3e7e4; border-radius: 5px; }
+.sim-mini > div { width: 100%; display: flex; justify-content: space-between; color: #46534c; font-size: 10px; }
+.sim-mini small { font-size: 9px; font-weight: 700; letter-spacing: .6px; }
+.sim-mini > strong { justify-self: start; color: #121b16; font-size: 24px; font-weight: 800; }
+.sim-outlook-text.stable { color: #1d6b42; } .sim-outlook-text.elevated { color: #9a5b06; } .sim-outlook-text.severe { color: #a3221a; }
+.sim-elevation { padding: 12px 14px; border-radius: 5px; }
+.sim-elevation.up { background: #fdecea; border: 1px solid #f6cdc8; }
+.sim-elevation.down { background: #e8f5ee; border: 1px solid #c7e6d3; }
+.sim-elevation.flat { background: #f3f5f3; border: 1px solid #e3e7e4; }
+.sim-elevation small { display: block; color: #33403a; font-size: 11px; font-weight: 650; }
+.sim-elevation b { color: #121b16; font-size: 20px; font-weight: 800; }
+.sim-elevation span { margin-left: 4px; color: #4e5b54; font-size: 11px; }
+.sim-elevation p { margin: 4px 0 0; color: #66726c; font-size: 9px; }
+.sim-forecasts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sim-forecast { display: grid; gap: 3px; padding: 10px 11px; border: 1px solid #e3e7e4; border-radius: 4px; }
+.sim-forecast small { color: #46534c; font-size: 9px; font-weight: 700; letter-spacing: .5px; }
+.sim-forecast b { color: #121b16; font-size: 15px; font-weight: 750; }
+.sim-forecast span { color: #77837b; font-size: 9px; }
+.sim-forecast span.worse { color: #b4231b; } .sim-forecast span.better { color: #1d6b42; }
+.sim-drivers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sim-pressure, .sim-protective { display: grid; align-content: start; gap: 6px; padding: 11px 12px; border-radius: 4px; font-size: 10px; }
+.sim-pressure { background: #fdecea; border: 1px solid #f6cdc8; } .sim-pressure > b { color: #9c1c2b; font-size: 12px; }
+.sim-protective { background: #e8f5ee; border: 1px solid #c7e6d3; } .sim-protective > b { color: #155c37; font-size: 12px; }
+.sim-pressure > div, .sim-protective > div { display: flex; justify-content: space-between; gap: 8px; color: #3c4943; }
+.sim-pressure em { color: #b4231b; font-style: normal; font-weight: 700; } .sim-protective em { color: #1d6b42; font-style: normal; font-weight: 700; }
+.sim-pressure p, .sim-protective p { margin: 0; color: #5f6b65; }
+.sim-inspect { padding: 9px 11px; border-radius: 4px; font-size: 10px; }
+.sim-inspect.ok { color: #155c37; background: #e8f5ee; } .sim-inspect.late { color: #9c1c2b; background: #fdecea; }
+.sim-fleet { display: grid; gap: 4px; padding: 10px 11px; background: #f4f6f4; border-radius: 4px; }
+.sim-fleet small { color: #2d5b4d; font-size: 9px; font-weight: 700; letter-spacing: .6px; }
+.sim-fleet span { color: #3d4a43; font-size: 11px; }
+.sim-review { padding: 10px 12px; border: 1px solid #e3e7e4; border-radius: 4px; font-size: 11px; }
+.sim-review summary { color: #1f2f28; font-weight: 700; cursor: pointer; }
+.sim-review ul, .sim-review p { margin: 8px 0 0; padding-left: 18px; color: #4b5852; line-height: 1.7; }
+.sim-review p { padding: 0; }
+
+.sim-context { padding: 16px; }
+.sim-context h2 { margin: 0; }
+.sim-context p { margin: 3px 0 10px; color: #6d7a72; font-size: 11px; }
+.sim-context > div { display: flex; flex-wrap: wrap; gap: 7px; }
+.sim-context span { padding: 6px 11px; color: #2c3a33; border: 1px solid #dfe5e1; border-radius: 14px; font-size: 11px; }
+
+@media (max-width: 980px) { .sim-grid { grid-template-columns: 1fr; } }
+@media (max-width: 620px) {
+  .sim-picker { flex-direction: column; align-items: stretch; }
+  .sim-picker label { flex: none; }
+  .sim-builder, .sim-baseline, .sim-report, .sim-context { padding: 12px; }
+  .sim-head { flex-direction: column; gap: 6px; }
+  .sim-two, .sim-forecasts, .sim-drivers { grid-template-columns: 1fr; }
+  .sim-field-scale small { display: none; }
+  .sim-gauge-card > strong { font-size: 32px; }
+}
+@media print { .sim-builder, .sim-picker { display: none; } .sim-grid { grid-template-columns: 1fr; } }
