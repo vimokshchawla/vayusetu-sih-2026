@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   Activity, AlertTriangle, ArrowDown, ArrowDownUp, ArrowUp, CalendarDays,
   Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, Download,
-  FileText, Gauge, HelpCircle, LayoutDashboard, Menu, Plane, Search, Settings,
-  ShieldCheck, SlidersHorizontal, Wrench, Map as MapIcon, Radar as RadarIcon, Building2, ChartColumn, Info,
+  FileText, Gauge, HelpCircle, LayoutDashboard, Menu, Plane, Search,
+  ShieldCheck, SlidersHorizontal, Wrench, Map as MapIcon, Info,
 } from 'lucide-react'
 import {
   Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ReferenceLine,
@@ -15,9 +15,6 @@ import type { Engine, EngineHistory, Risk } from './types'
 import { classifyRisk, exportFleetCsv, formatDate, getRiskCounts } from './utils/fleet'
 import WhatIf from './pages/WhatIf'
 import BaseMap from './pages/BaseMap'
-import RadarPage from './pages/Radar'
-import Units from './pages/Units'
-import Analytics from './pages/Analytics'
 import FieldGuide from './pages/FieldGuide'
 import { availability, buildFleet, pctOf } from './utils/readiness'
 import './fleet.css'
@@ -27,12 +24,11 @@ import './portal.css'
 
 const navigation = [
   ['Overview', '/', LayoutDashboard], ['Base Map', '/bases', MapIcon], ['Fleet', '/fleet', Plane],
-  ['Radar', '/radar', RadarIcon], ['Diagnostics', '/diagnostics', Gauge], ['Maintenance', '/maintenance', Wrench],
-  ['Warnings', '/warnings', AlertTriangle], ['What-if', '/planning', CalendarDays], ['Units', '/units', Building2],
-  ['Analytics', '/analytics', ChartColumn], ['Model', '/model', Activity], ['Reports', '/reports', FileText],
+  ['Diagnostics', '/diagnostics', Gauge], ['Maintenance', '/maintenance', Wrench],
+  ['Warnings', '/warnings', AlertTriangle], ['What-if', '/planning', CalendarDays],
+  ['Model', '/model', Activity], ['Reports', '/reports', FileText],
 ] as const
-const titles: Record<string, string> = { '/': 'Overview', '/bases': 'Air Base Map', '/fleet': 'Fleet Monitoring', '/radar': 'Readiness Radar', '/diagnostics': 'Engine Diagnostics', '/maintenance': 'Predictive Maintenance', '/warnings': 'Early Warnings', '/planning': 'What-if Planning', '/units': 'Maintenance Units', '/analytics': 'Fleet Analytics', '/model': 'Model Performance', '/reports': 'Reports' }
-titles['/settings'] = 'Settings'
+const titles: Record<string, string> = { '/': 'Overview', '/bases': 'Air Base Map', '/fleet': 'Fleet Monitoring', '/diagnostics': 'Engine Diagnostics', '/maintenance': 'Predictive Maintenance', '/warnings': 'Early Warnings', '/planning': 'What-if Planning', '/model': 'Model Performance', '/reports': 'Reports' }
 
 function App() {
   const location = useLocation()
@@ -44,7 +40,7 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [acknowledged, setAcknowledged] = useState<string[]>([])
   const [toast, setToast] = useState('')
-  const [compactRows, setCompactRows] = useState(false)
+  const [compactRows] = useState(false)
   const engines = subset === 'All subsets' ? fleetEngines : fleetEngines.filter((e) => e.subset === subset)
   const scopeLabel = page === '/planning' ? 'All subsets' : subset
   const scopeCount = page === '/planning' ? fleetEngines.length : engines.length
@@ -71,8 +67,8 @@ function App() {
   }
   return <div className={`portal-shell ${compactRows ? 'compact-rows' : ''}`}>
     <header className="portal-header"><button className="portal-brand" onClick={() => navigate('/')}><span className="portal-brand-mark"><img src="/icon.svg" alt="" /></span><span><strong>VayuSetu</strong><small>Predictive maintenance &amp; fleet availability</small></span></button><form className="portal-search" role="search" onSubmit={submitHeaderSearch}><Search size={17} /><input aria-label="Search engines, tail numbers or subsets" placeholder="Search engines, tail numbers or subsets" value={headerSearch} onChange={(event) => setHeaderSearch(event.target.value)} /><button type="submit" aria-label="Search"><ChevronRight size={16} /></button></form><div className="portal-scope" aria-label={`Fleet scope: ${scopeLabel}, ${scopeCount} engines`}><span><small>FLEET SCOPE</small><b>{scopeLabel}</b></span><i>{scopeCount} {scopeCount === 1 ? 'engine' : 'engines'}</i></div><button className="portal-menu-toggle" aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><Menu size={19} /></button></header>
-    <nav className="portal-nav" aria-label="Main navigation">{navigation.map(([name, path, Icon]) => <button key={path} className={page === path ? 'active' : ''} onClick={() => navigate(path)}><Icon size={16} /><span>{name}</span>{path === '/warnings' && <i className="portal-nav-count">{fleetWarnings.length - acknowledged.length}</i>}</button>)}<button className={page === '/settings' ? 'active' : ''} onClick={() => navigate('/settings')}><Settings size={16} /><span>Settings</span></button></nav>
-    {mobileMenuOpen && <nav className="portal-mobile-nav" aria-label="Mobile navigation">{navigation.map(([name, path, Icon]) => <button key={path} className={page === path ? 'active' : ''} onClick={() => navigate(path)}><Icon size={16} />{name}</button>)}<button className={page === '/settings' ? 'active' : ''} onClick={() => navigate('/settings')}><Settings size={16} />Settings</button></nav>}
+    <nav className="portal-nav" aria-label="Main navigation">{navigation.map(([name, path, Icon]) => <button key={path} className={page === path ? 'active' : ''} onClick={() => navigate(path)}><Icon size={16} /><span>{name}</span>{path === '/warnings' && <i className="portal-nav-count">{fleetWarnings.length - acknowledged.length}</i>}</button>)}</nav>
+    {mobileMenuOpen && <nav className="portal-mobile-nav" aria-label="Mobile navigation">{navigation.map(([name, path, Icon]) => <button key={path} className={page === path ? 'active' : ''} onClick={() => navigate(path)}><Icon size={16} />{name}</button>)}</nav>}
     <main className="portal-content">
       <div className={`page-head ${page === '/' ? 'overview-hero' : ''}`}><div><span className="page-kicker">{page === '/' ? 'FLEET OPERATIONS' : `SERVICE / ${titles[page].toUpperCase()}`}</span><h1>{page === '/' ? 'Fleet readiness' : titles[page]}</h1><p>{description(page)}</p>{page === '/' && <div className="overview-actions"><button className="button primary" onClick={() => navigate('/maintenance')}><Wrench size={15} />Review priorities</button><button className="button secondary" onClick={() => navigate('/planning')}><CalendarDays size={15} />What-if planning</button></div>}</div><div className="head-actions">{['/', '/fleet', '/maintenance', '/reports'].includes(page) && <label className="select-box"><select value={subset} onChange={(e) => setSubset(e.target.value)} aria-label="Select operating subset"><option>All subsets</option><option>FD001</option><option>FD002</option><option>FD003</option><option>FD004</option></select><ChevronDown size={14} /></label>}{page === '/' && <button className="button secondary" onClick={() => { exportFleetCsv(engines); announce('Fleet report exported as CSV') }}><Download size={15} />Export</button>}</div></div>
       {page === '/' && <Overview engines={engines} openEngine={openEngine} navigate={navigate} />}
@@ -82,12 +78,8 @@ function App() {
       {page === '/warnings' && <Warnings acknowledged={acknowledged} acknowledge={(id) => { setAcknowledged((current) => current.includes(id) ? current : [...current, id]); announce('Warning acknowledged') }} openEngine={(id) => { setSelectedId(id); navigate('/diagnostics') }} />}
       {page === '/planning' && <WhatIf engines={fleetEngines} initialId={selectedId} viewEngine={(id) => { setSelectedId(id); navigate('/diagnostics') }} />}
       {page === '/bases' && <BaseMap engines={fleetEngines} openEngine={(id) => { setSelectedId(id); navigate('/diagnostics') }} />}
-      {page === '/radar' && <RadarPage engines={fleetEngines} openEngine={(id) => { setSelectedId(id); navigate('/diagnostics') }} />}
-      {page === '/units' && <Units engines={fleetEngines} />}
-      {page === '/analytics' && <Analytics engines={fleetEngines} />}
       {page === '/model' && <ModelPerformance />}
       {page === '/reports' && <><Reports engines={engines} exported={() => { exportFleetCsv(engines); announce('Engine report exported as CSV') }} /><FieldGuide engines={fleetEngines} announce={announce} /></>}
-      {page === '/settings' && <SettingsPage compact={compactRows} toggleCompact={() => setCompactRows(!compactRows)} />}
       {toast && <div className="toast" role="status"><Check size={15} />{toast}</div>}
       <footer><span>VayuSetu · SIH26249</span><span>Model v1.1 · NASA C-MAPSS simulated data · Not for operational use</span></footer>
     </main>
@@ -233,6 +225,4 @@ function Reports({ engines, exported }: { engines: Engine[]; exported: () => voi
   return <><div className="report-toolbar"><div><small>FLEET RISK SUMMARY</small><b>{engines.length} engines · Model {modelMetrics.version.split(' ')[0]} · NASA C-MAPSS test set · {formatDate(new Date())}</b></div><div><button className="button secondary" onClick={() => window.print()}><FileText size={15} />Print report</button><button className="button primary" onClick={exported}><Download size={15} />Export CSV</button></div></div><div className="report-counts">{(['RED', 'AMBER', 'GREEN'] as Risk[]).map((risk) => <div className={`priority-card ${risk.toLowerCase()}`} key={risk}><span>{risk} priority</span><b>{counts[risk]}</b><small>Engines by P10 risk policy</small></div>)}</div><section className="panel"><div className="panel-title"><div><h2>Highest-priority engines</h2><p>Sorted by pessimistic RUL · engineering review recommended</p></div><span className="data-tag">MODEL OUTPUT</span></div><div className="table-scroll"><table className="scenario-table"><thead><tr><th>Engine ID</th><th>Subset</th><th>Risk</th><th>P10 / Median / P90</th><th>Top sensor driver</th><th>Suggested next step</th></tr></thead><tbody>{highest.map((e) => <tr key={e.id}><td className="engine-id">{e.id}</td><td>{e.subset}</td><td><RiskTag value={classifyRisk(e.p10)} /></td><td>{e.p10} / {e.medianRul} / {e.p90} cycles</td><td>{e.topDriver}</td><td>{e.nextAction}</td></tr>)}</tbody></table></div></section><section className="panel report-model"><div className="panel-title"><div><h2>Model-performance summary</h2><p>Training, validation, calibration, and test metrics</p></div></div><p>Test RMSE {modelMetrics.overall.rmse} cycles (95% CI {modelMetrics.overall.rmseCi[0]}–{modelMetrics.overall.rmseCi[1]}) on {modelMetrics.data.testEngines} NASA test engines · MAE {modelMetrics.overall.mae} · P10–P90 range coverage {Math.round(modelMetrics.overall.coverage * 100)}% · early warning in time for {modelMetrics.earlyWarning.outcomes['good warning']} of {modelMetrics.earlyWarning.engines} calibration engines.</p><small>NASA C-MAPSS uses simulated turbofan data and is not military aircraft maintenance data.</small></section></>
 }
 
-function SettingsPage({ compact, toggleCompact }: { compact: boolean; toggleCompact: () => void }) { return <section className="panel settings-panel"><div className="panel-title"><div><h2>Workspace preferences</h2><p>Browser session settings</p></div></div><Setting name="Compact table rows" detail="Reduce vertical spacing in fleet tables." checked={compact} change={toggleCompact} /><div className="setting-row"><div><b>Data source</b><small>VayuSetu model v1.1 outputs bundled with the app · no live API connected.</small></div><span className="data-tag">MODEL v1.1</span></div><p className="settings-foot">Preferences apply to this browser session only.</p></section> }
-function Setting({ name, detail, checked, change }: { name: string; detail: string; checked: boolean; change: () => void }) { return <div className="setting-row"><div><b>{name}</b><small>{detail}</small></div><button role="switch" aria-checked={checked} className={`toggle ${checked ? 'on' : ''}`} onClick={change}><i /></button></div> }
 export default App

@@ -21,9 +21,9 @@
 .fl-map-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px; align-items: start; }
 .fl-map .panel-title { flex-wrap: wrap; gap: 8px; }
 .fl-svg { width: 100%; max-height: 640px; display: block; margin: 4px 0; }
-.fl-state { fill: #e8eeea; stroke: #fff; stroke-width: .8; }
+.fl-state { fill: #e8eeea; stroke: #b9c8bf; stroke-width: .7; stroke-linejoin: round; }
 .fl-state:hover { fill: #dce6df; }
-.fl-state.sel { fill: #cfe0d6; }
+.fl-state.sel { fill: #b9d6c4; stroke: #4d7b68; stroke-width: 1.2; }
 .fl-grid { stroke: #e6ebe7; stroke-width: 1; stroke-dasharray: 3 4; }
 .fl-region { fill: #c3ccc6; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-anchor: middle; }
 .fl-base { cursor: pointer; outline: none; }
@@ -121,3 +121,6 @@
   .fl-ranking .fl-days { grid-column: 2 / 3; }
 }
 @media print { .fg-actions, .demo-strip { display: none; } }
+.fl-state.has-base { fill: #dfe9e2; }
+.fl-credit { margin: 0 14px 12px; color: #8a948e; font-size: 9px; }
+.fl-credit a { color: #4d7b68; }

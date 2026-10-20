@@ -127,3 +127,5 @@
   .sim-gauge-card > strong { font-size: 32px; }
 }
 @media print { .sim-builder, .sim-picker { display: none; } .sim-grid { grid-template-columns: 1fr; } }
+.sim-hint { max-width: 380px; margin: 4px 0 0; padding: 8px 10px; color: #6b4a0c; background: #fbf0dc; border-radius: 4px; font-size: 10px; line-height: 1.5; text-align: left; }
+.sim-hint .link-button { font-size: 10px; }

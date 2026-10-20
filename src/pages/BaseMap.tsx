@@ -17,6 +17,7 @@ function ringsOf(g: { type: string; coordinates: unknown }): number[][][] {
   if (g.type === 'MultiPolygon') return (g.coordinates as number[][][][]).flat()
   return []
 }
+const norm = (x: string) => x.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim()
 const stateName = (p?: Record<string, unknown>) => String(p?.st_nm ?? p?.ST_NM ?? p?.NAME_1 ?? p?.name ?? p?.state ?? p?.State ?? '')
 
 function useIndiaGeo() {
@@ -38,6 +39,7 @@ export default function BaseMap({ engines, openEngine }: { engines: Engine[]; op
   const ready = (b: BaseSummary) => (h === 0 ? b.readyNow : b.expectedReady(h))
   const pct = (b: BaseSummary) => pctOf(ready(b), b.aircraft.length)
   const base = bases.find((b) => b.id === selected)
+  const baseStates = new Set(bases.map((b) => norm(b.state)))
   const ranked = [...bases].sort((a, b) => pct(a) - pct(b))
   const total = fleet.length
   const fleetReady = bases.reduce((s, b) => s + ready(b), 0)
@@ -57,7 +59,7 @@ export default function BaseMap({ engines, openEngine }: { engines: Engine[]; op
         <div className="panel-title"><div><h2>India air base map</h2><p>Bases coloured by share of aircraft ready · select a base</p></div>
           <div className="fl-seg" role="tablist">{HORIZONS.map((o) => <button key={o.h} className={h === o.h ? 'active' : ''} onClick={() => setH(o.h)}>{o.label}</button>)}</div></div>
         <svg viewBox={`-10 -10 ${W + 20} ${H + 20}`} className="fl-svg" role="img" aria-label="Map of India with air bases">
-          {paths.length ? paths.map((p) => <path key={p.key} d={p.d} className={`fl-state ${base && p.name.toLowerCase() === base.state.toLowerCase() ? 'sel' : ''}`}><title>{p.name}</title></path>) : <>
+          {paths.length ? paths.map((p) => <path key={p.key} d={p.d} className={`fl-state ${base && norm(p.name) === norm(base.state) ? 'sel' : baseStates.has(norm(p.name)) ? 'has-base' : ''}`}><title>{p.name}</title></path>) : <>
             {[10, 15, 20, 25, 30, 35].map((lat) => <line key={`a${lat}`} x1={0} x2={W} y1={px(70, lat)[1]} y2={px(70, lat)[1]} className="fl-grid" />)}
             {[70, 75, 80, 85, 90, 95].map((lon) => <line key={`o${lon}`} y1={0} y2={H} x1={px(lon, 20)[0]} x2={px(lon, 20)[0]} className="fl-grid" />)}
           </>}
@@ -72,7 +74,8 @@ export default function BaseMap({ engines, openEngine }: { engines: Engine[]; op
           })}
         </svg>
         <div className="legend"><span><i style={{ background: RISK_HEX.GREEN }} />≥ 80% ready</span><span><i style={{ background: RISK_HEX.AMBER }} />65–80%</span><span><i style={{ background: RISK_HEX.RED }} />&lt; 65%</span><span>Circle size = aircraft at base · number = % ready</span></div>
-        {geo === null && <p className="fl-note">State boundaries not loaded. Copy the Indian states GeoJSON used by NIRMAN to <code>public/data/india_states.geojson</code> (use a file that follows the official Survey of India boundary).</p>}
+        {geo && <p className="fl-credit">State boundaries: <a href="https://github.com/datameet/maps" target="_blank" rel="noreferrer">DataMeet India community</a> (CC BY 4.0), simplified for display. Base locations are illustrative.</p>}
+        {geo === null && <p className="fl-note">India map file not found at <code>public/data/india_states.geojson</code> – bases are shown on a plain grid.</p>}
       </section>
 
       <section className="panel fl-detail">

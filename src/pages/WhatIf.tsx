@@ -35,7 +35,7 @@ const QUICK: { name: string; params: Params }[] = [
   { name: 'Reduced flying', params: { ...BASELINE, tempo: 0.5 } },
   { name: 'Ground & inspect', params: { ...BASELINE, groundDays: 5, inspectDay: 7 } },
 ]
-const HORIZONS = [30, 60, 90, 180]
+const HORIZONS = [7, 14, 30, 60, 90, 180]
 
 // ---------- calculation ----------
 function cyclesUsed(days: number, p: Params) {
@@ -110,7 +110,13 @@ const dayText = (d: number | null, start: Date) => {
 // ---------- page ----------
 export default function WhatIf({ engines, initialId, viewEngine }: { engines: Engine[]; initialId: string; viewEngine: (id: string) => void }) {
   const sorted = useMemo(() => [...engines].sort((a, b) => a.p10 - b.p10), [engines])
-  const [engineId, setEngineId] = useState(initialId)
+  // open on the chosen engine only if it still has life to play with; otherwise on an AMBER engine with a planning window
+  const [engineId, setEngineId] = useState(() => {
+    const chosen = engines.find((e) => e.id === initialId)
+    if (chosen && chosen.p10 > 25) return chosen.id
+    const pool = engines.filter((e) => e.p10 > 40 && e.p10 <= 60)
+    return (pool.length ? [...pool].sort((a, b) => Math.abs(a.p10 - 50) - Math.abs(b.p10 - 50))[0] : chosen ?? engines[0]).id
+  })
   const [draft, setDraft] = useState<Params>(BASELINE)
   const [horizon, setHorizon] = useState(30)
   const [open, setOpen] = useState<string>(GROUPS[0])
@@ -118,6 +124,8 @@ export default function WhatIf({ engines, initialId, viewEngine }: { engines: En
   const engine = engines.find((e) => e.id === engineId) ?? sorted[0]
   const today = useMemo(() => new Date(), [])
   const baseRisk = riskPct(engine, BASELINE, horizon)
+  const saturated = baseRisk >= 99.5 ? 'high' : baseRisk <= 0.5 ? 'low' : ''
+  const shorter = HORIZONS.filter((x) => x < horizon && riskPct(engine, BASELINE, x) < 95).pop()
   const result = useMemo(() => {
     if (!submitted) return null
     const e = engines.find((x) => x.id === submitted.engineId)
@@ -165,6 +173,8 @@ export default function WhatIf({ engines, initialId, viewEngine }: { engines: En
             <em className={`sim-outlook ${outlook(baseRisk).toLowerCase()}`}>{outlook(baseRisk).toUpperCase()} OUTLOOK</em>
             <Gauge pct={baseRisk} />
             <p className="sim-legend">Stable ≤ 30% · Elevated &gt; 30%–60% · Severe &gt; 60%</p>
+            {saturated === 'high' && <p className="sim-hint">This engine is expected to reach end of life within {horizon} days whatever the tempo, so flying changes can't lower this number. Try <b>Ground &amp; inspect</b>{shorter ? <>, a <button className="link-button" onClick={() => setHorizon(shorter)}>{shorter}-day horizon</button></> : ''}, or an AMBER engine.</p>}
+            {saturated === 'low' && <p className="sim-hint">Very little risk within {horizon} days even at higher tempo. Try a longer horizon or <b>Surge operations</b> to see when this engine becomes a concern.</p>}
             <p className="sim-base-meta">At 1 sortie/day, 1 cycle per sortie · model range P10 {engine.p10} / median {engine.medianRul} / P90 {engine.p90} cycles <Tag value={classifyRisk(engine.p10)} /></p>
           </div>
         </section>
@@ -173,7 +183,7 @@ export default function WhatIf({ engines, initialId, viewEngine }: { engines: En
           {dirty && <div className="sim-dirty">Inputs changed · calculate again to refresh this report.</div>}
           <small className="sim-kicker">SUBMITTED SCENARIO REPORT</small><h2>Scenario risk outlook</h2><p className="sim-sub">{result.engine.id} · {result.horizon}-day horizon · {result.contributions.length} {result.contributions.length === 1 ? 'parameter' : 'parameters'} changed.</p>
           <div className="sim-two">{[['BASELINE HEADLINE', result.base], ['SCENARIO HEADLINE', result.scen]].map(([label, v]) => <div className="sim-mini" key={label as string}><div><small>{label}</small><span className={`sim-outlook-text ${outlook(v as number).toLowerCase()}`}>{outlook(v as number)}</span></div><strong>{fmt(v as number)}%</strong><Gauge pct={v as number} size="small" /></div>)}</div>
-          <div className={`sim-elevation ${result.delta > 0.05 ? 'up' : result.delta < -0.05 ? 'down' : 'flat'}`}><small>{result.delta > 0.05 ? 'Risk elevation' : result.delta < -0.05 ? 'Risk reduction' : 'No change in risk'}</small><b>{result.delta >= 0 ? '+' : ''}{fmt(result.delta)} risk points</b><span>· {outlook(result.base)} → {outlook(result.scen)}</span><p>Percentage points of end-of-life risk within {result.horizon} days.</p></div>
+          <div className={`sim-elevation ${result.delta > 0.05 ? 'up' : result.delta < -0.05 ? 'down' : 'flat'}`}><small>{result.delta > 0.05 ? 'Risk elevation' : result.delta < -0.05 ? 'Risk reduction' : 'No change in risk'}</small><b>{result.delta >= 0 ? '+' : ''}{fmt(result.delta)} risk points</b><span>· {outlook(result.base)} → {outlook(result.scen)}</span><p>{Math.abs(result.delta) <= 0.05 && (result.base >= 99.5 || result.base <= 0.5) ? (result.base >= 99.5 ? `Already certain to reach end of life within ${result.horizon} days at any tempo – only grounding or an inspection changes this. Compare the days-to-Critical forecast below, or use a shorter horizon.` : `Risk stays near zero within ${result.horizon} days – try a longer horizon.`) : `Percentage points of end-of-life risk within ${result.horizon} days.`}</p></div>
           <small className="sim-kicker">UPDATED FORECASTS</small>
           <div className="sim-forecasts">{result.forecasts.map((f) => {
             const isDays = f.unit === 'd'
