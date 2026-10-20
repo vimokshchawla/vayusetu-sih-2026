@@ -68,3 +68,4 @@
 .portal-shell .portal-scope, .portal-shell .portal-scope * { white-space: nowrap; }
 .portal-shell .portal-scope > span { text-align: right; }
 .portal-shell .overview-hero .head-actions { max-width: 640px; }
+.portal-shell .fl-kpis > .panel, .portal-shell .fl-map-grid > .panel, .portal-shell .fl-two > .panel, .portal-shell .model-panels > .panel, .portal-shell .chart-grid > .panel, .portal-shell .model-metrics > .panel, .portal-shell .plan-kpis > .panel { margin-top: 0; }

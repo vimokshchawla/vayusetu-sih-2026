@@ -128,3 +128,5 @@
 .fl-state { cursor: default; } .fl-state[class*="st-"] { cursor: pointer; }
 .fl-state.sel { stroke: #1f2f28; stroke-width: 1.6; }
 .fl-slabel { fill: #6b7a72; font-size: 9px; text-anchor: middle; pointer-events: none; }
+.fl-state.area.st-green { fill: #d3eedb; } .fl-state.area.st-amber { fill: #fde6b0; } .fl-state.area.st-red { fill: #f8c3bd; }
+.fl-state.area { cursor: pointer; }

@@ -64,12 +64,12 @@ export default function BaseMap({ engines, openEngine }: { engines: Engine[]; op
 
     <div className="fl-map-grid">
       <section className="panel fl-map">
-        <div className="panel-title"><div><h2>India air base map</h2><p>Bases coloured by share of aircraft ready · select a base</p></div>
+        <div className="panel-title"><div><h2>India air base map</h2><p>States shaded by the readiness of the air base covering them · select a base</p></div>
           <div className="fl-seg" role="tablist">{HORIZONS.map((o) => <button key={o.h} className={h === o.h ? 'active' : ''} onClick={() => setH(o.h)}>{o.label}</button>)}</div></div>
         <svg viewBox={`-10 -10 ${W + 20} ${H + 20}`} className="fl-svg" role="img" aria-label="Map of India with air bases">
-          {paths.length ? <>{paths.map((p) => { const sb = bases.filter((b) => norm(b.state) === norm(p.name)); const band = sb.length ? readinessBand(Math.min(...sb.map(pct))) : null
-            return <path key={p.key} d={p.d} className={`fl-state ${band ? 'st-' + band.toLowerCase() : ''} ${base && norm(p.name) === norm(base.state) ? 'sel' : ''}`} onClick={() => sb[0] && setSelected(sb[0].id)}><title>{p.name}{sb.length ? ` – ${sb.map((b) => b.name.replace('Vayu Base ', '') + ' ' + Math.round(pct(b)) + '% ready').join(', ')}` : ' – no demo base'}</title></path> })}
-            {paths.filter((p) => p.area > 2.2 && !baseStates.has(norm(p.name))).map((p) => <text key={'l' + p.key} x={p.lx} y={p.ly} className="fl-slabel">{SHORT[norm(p.name)] ?? p.name}</text>)}</> : <>
+          {paths.length ? <>{paths.map((p) => { const own = bases.filter((b) => norm(b.state) === norm(p.name)); const sb = own.length ? own : [[...bases].sort((x, y) => Math.hypot(px(x.lon, x.lat)[0] - p.lx, px(x.lon, x.lat)[1] - p.ly) - Math.hypot(px(y.lon, y.lat)[0] - p.lx, px(y.lon, y.lat)[1] - p.ly))[0]].filter(Boolean); const band = sb.length ? readinessBand(Math.min(...sb.map(pct))) : null
+            return <path key={p.key} d={p.d} className={`fl-state ${band ? 'st-' + band.toLowerCase() : ''} ${own.length ? 'own' : 'area'} ${base && sb[0]?.id === base.id ? 'sel' : ''}`} onClick={() => sb[0] && setSelected(sb[0].id)}><title>{p.name}{own.length ? ' – ' : ' – covered by '}{sb.map((b) => b.name.replace('Vayu Base ', '') + ' (' + Math.round(pct(b)) + '% ready)').join(', ')}</title></path> })}
+            {paths.filter((p) => p.area > 2.2 && !baseStates.has(norm(p.name)) && !bases.some((b) => { const [bx, by] = px(b.lon, b.lat); return Math.hypot(bx - p.lx, by - p.ly) < 48 })).map((p) => <text key={'l' + p.key} x={p.lx} y={p.ly} className="fl-slabel">{SHORT[norm(p.name)] ?? p.name}</text>)}</> : <>
             {[10, 15, 20, 25, 30, 35].map((lat) => <line key={`a${lat}`} x1={0} x2={W} y1={px(70, lat)[1]} y2={px(70, lat)[1]} className="fl-grid" />)}
             {[70, 75, 80, 85, 90, 95].map((lon) => <line key={`o${lon}`} y1={0} y2={H} x1={px(lon, 20)[0]} x2={px(lon, 20)[0]} className="fl-grid" />)}
           </>}
