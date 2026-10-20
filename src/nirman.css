@@ -1,0 +1,70 @@
+/* NIRMAN-style presentation layer (loaded last) */
+.portal-shell { background: #f4f6f5; font-size: 15px; }
+.nm-topline { min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 1.5%; color: #e6efe9; background: #0b3d33; font-size: 14px; }
+.nm-topline > span:last-child { display: flex; gap: 22px; }
+.nm-topline b { color: #fff; font-weight: 500; } .nm-topline i { color: #b9d3c6; font-style: normal; }
+.portal-shell .portal-header { min-height: 112px; padding: 0 1.5%; gap: 26px; }
+.portal-shell .portal-brand-mark, .portal-shell .portal-brand-mark img { width: 52px; height: 58px; }
+.portal-shell .portal-brand strong { font-size: 30px; color: #13261f; }
+.portal-shell .portal-brand small { font-size: 14px; }
+.nm-context { display: grid; gap: 3px; padding-left: 26px; border-left: 1px solid #dfe5e1; white-space: nowrap; }
+.nm-context small { color: #55625b; font-size: 16px; } .nm-context b { color: #0b4a3d; font-size: 16px; font-weight: 650; }
+.portal-shell .portal-search { flex: 0 1 620px; height: 46px; } .portal-search input { font-size: 15px; }
+.portal-shell .portal-scope small { font-size: 10px; } .portal-scope b, .portal-scope > i { font-size: 13px; }
+.portal-shell .portal-nav { min-height: 60px; padding: 0 0.6%; gap: 2px; background: #0b4a3f; border: 0; }
+.portal-shell .portal-nav > button { padding: 0 20px; color: #fff; font-size: 16px; font-weight: 650; }
+.portal-shell .portal-nav > button svg { display: none; }
+.portal-shell .portal-nav > button:hover { color: #fff; background: #13604f; }
+.portal-shell .portal-nav > button.active { color: #fff; background: #1a6b58; }
+.portal-shell .portal-nav > button.active::after { display: none; }
+.portal-shell .portal-nav-count { color: #0b4a3f; background: #f3e3c3; font-size: 11px; }
+.portal-shell .portal-content { padding: 26px 5% 0; }
+.portal-shell .page-head, .portal-shell .overview-hero { padding: 30px 34px; background: linear-gradient(100deg, #fff 55%, #e9f6ef); border: 1px solid #e3ebe6; border-radius: 14px; box-shadow: 0 1px 3px #0b3d330d; }
+.portal-shell .page-head h1 { color: #111; font-size: 40px; font-weight: 750; letter-spacing: -0.5px; }
+.portal-shell .page-head p { color: #46524b; font-size: 17px; }
+.portal-shell .page-kicker { font-size: 12px; letter-spacing: 1.4px; }
+.portal-shell .button { min-height: 44px; padding: 0 20px; font-size: 16px; font-weight: 600; border-radius: 6px; }
+.portal-shell .button.primary { background: #0b4a3f; } .button.primary:hover { background: #083a31; }
+.portal-shell .button.secondary { color: #13261f; background: #fff; border: 1px solid #dfe5e1; }
+.portal-shell .panel { border: 1px solid #e3ebe6; border-radius: 12px; box-shadow: 0 1px 3px #0b3d330d; }
+.portal-shell .panel-title h2 { color: #13261f; font-size: 21px; font-weight: 700; }
+.portal-shell .panel-title p { font-size: 14px; }
+.portal-shell .kpi-grid { gap: 16px; margin: 18px 0; }
+.portal-shell .kpi { min-height: 136px; padding: 20px 20px; background: #fff; border: 1px solid #e3ebe6; border-radius: 12px; }
+.portal-shell .kpi-label { color: #4a5650; font-size: 14px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+.portal-shell .kpi > strong { margin-top: 10px; font-size: 36px; font-weight: 750; }
+.portal-shell .kpi > small { font-size: 14px; color: #5b6862; }
+.nm-dist { padding: 22px 24px; margin-bottom: 18px; }
+.nm-dist h2 { margin: 0 0 18px; color: #13261f; font-size: 22px; font-weight: 700; }
+.nm-bar { height: 44px; display: flex; overflow: hidden; border-radius: 22px; }
+.nm-bar span { display: grid; place-items: center; min-width: 44px; color: #fff; font-size: 15px; font-weight: 700; }
+.nm-bar .green { background: #1e8840; } .nm-bar .amber { background: #b9530a; } .nm-bar .red { background: #b8192b; }
+.nm-dist p { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 14px 0 0; color: #1f2a24; font-size: 15px; font-weight: 500; }
+.portal-shell .engine-table td, .portal-shell .scenario-table td { font-size: 14px; } .engine-table th, .scenario-table th { font-size: 12px; }
+.portal-shell .metric small, .portal-shell .driver small, .portal-shell .chart-foot, .portal-shell .legend { font-size: 13px; }
+.portal-shell .metric b { font-size: 19px; } .driver b { font-size: 13px; }
+.portal-shell footer { font-size: 12px; }
+@media (max-width: 900px) { .nm-context, .nm-topline > span:last-child { display: none; } .portal-nav > button { padding: 0 14px; font-size: 14px; } .page-head h1 { font-size: 30px; } .portal-header { min-height: 84px; } }
+
+.portal-shell .page-head, .portal-shell .overview-hero { border-left: 1px solid #e3ebe6; }
+.portal-shell .overview-hero::before, .portal-shell .page-head::before { display: none; }
+.portal-shell .portal-brand small { white-space: nowrap; }
+.portal-shell .kpi { background: #fff; border-top: 1px solid #e3ebe6; }
+.portal-shell .kpi-label i { display: none; }
+.portal-shell .portal-nav > button { font-size: 16px; padding: 0 20px; }
+.portal-shell .kpi-grid { background: transparent; border: 0; box-shadow: none; }
+.portal-shell .kpi-grid .kpi { background: #fff !important; border: 1px solid #e3ebe6 !important; }
+.portal-shell .kpi-grid .kpi::before { display: none; }
+.nm-topline > span:first-child { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (max-width: 620px) { .nm-topline { font-size: 12px; } .portal-shell .page-head h1 { font-size: 28px; } }
+.portal-shell .overview-hero { align-items: center; padding: 38px 36px; }
+.portal-shell .overview-hero h1 { font-size: 44px; }
+.portal-shell .head-actions { flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; }
+.portal-shell .head-actions .overview-actions { display: flex; gap: 10px; margin: 0; }
+.portal-shell .portal-scope { padding: 0; background: none; border: 0; }
+.portal-shell .portal-scope small { color: #55625b; font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.portal-shell .portal-scope b { color: #13261f; font-size: 16px; font-weight: 600; }
+.portal-shell .portal-scope > i { border: 0; font-size: 14px; }
+.portal-shell .portal-scope, .portal-shell .portal-scope * { white-space: nowrap; }
+.portal-shell .portal-scope > span { text-align: right; }
+.portal-shell .overview-hero .head-actions { max-width: 640px; }
